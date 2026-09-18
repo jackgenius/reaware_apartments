@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Reaware Apartments - Richiesta Informazioni</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; }
+.container { max-width:800px; margin:auto; background:#fff; padding:25px; border-radius:10px; }
+h2 { text-align:center; }
+label { font-weight:bold; margin-top:10px; display:block; }
+input, textarea { width:100%; padding:10px; margin-top:5px; border-radius:5px; border:1px solid #ccc; }
+button { padding:12px 20px; background:#0073e6; color:#fff; border:none; border-radius:5px; cursor:pointer; margin-top:20px; width:100%; }
+button:hover { background:#005bb5; }
+a.btn { display:block; text-align:center; padding:12px; background:#25D366; color:#fff; border-radius:5px; margin-top:20px; text-decoration:none; }
+a.btn:hover { background:#1da851; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h2>Richiesta Informazioni</h2>
+<p>Compila il form oppure contattami direttamente su WhatsApp.</p>
+
+<form id="infoForm" action="https://api.web3forms.com/submit" method="POST">
+
+<input type="hidden" name="access_key" value="f2ed97b8-5ef4-43e0-ab8f-945d3a7d926b">
+<input type="hidden" name="subject" value="Reaware Apartments - Richiesta Informazioni">
+<input type="hidden" name="email_to" value="jackgeniosky@gmail.com">
+<input type="hidden" name="redirect" value="https://reaware.it/grazie.html">
+
+<label>Nome</label>
+<input type="text" name="nome" id="nome" required>
+
+<label>Cognome</label>
+<input type="text" name="cognome" id="cognome" required>
+
+<label>Email</label>
+<input type="email" name="email" required>
+
+<label>Telefono (con prefisso internazionale)</label>
+<input type="text" name="telefono" id="telefono" required>
+
+<label>Data check-in</label>
+<input type="date" name="checkin" id="checkin" required>
+
+<label>Data check-out</label>
+<input type="date" name="checkout" id="checkout" required>
+
+<label>Numero ospiti</label>
+<input type="number" name="ospiti" min="1" required>
+
+<label>Messaggio</label>
+<textarea name="messaggio" rows="4"></textarea>
+
+<button type="submit">Invia Richiesta</button>
+</form>
+
+<a class="btn" href="https://wa.me/393773052989?text=Ciao%20vorrei%20sapere%20la%20disponibilit%C3%A0%20per%20un%20soggiorno%20dal%20___%20al%20___%20per%20___%20persone.">
+Contattami su WhatsApp
+</a>
+
+</div>
+
+<script>
+// VALIDAZIONE FORM
+document.getElementById("infoForm").addEventListener("submit", function(e) {
+
+    // Nome e cognome
+    const nome = document.getElementById("nome").value.trim();
+    const cognome = document.getElementById("cognome").value.trim();
+    if (nome.length < 2 || cognome.length < 2) {
+        alert("Inserisci nome e cognome validi.");
+        e.preventDefault();
+        return;
+    }
+
+    // Telefono: almeno 10 cifre totali (prefisso + numero)
+    const telefono = document.getElementById("telefono").value.trim();
+    const phoneDigits = telefono.replace(/\D/g, "");
+
+    if (!telefono.startsWith("+") || phoneDigits.length < 10) {
+        alert("Il numero di telefono deve iniziare con + e contenere almeno 10 cifre totali (prefisso + numero).");
+        e.preventDefault();
+        return;
+    }
+
+    // Date
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const checkin = new Date(document.getElementById("checkin").value);
+    const checkout = new Date(document.getElementById("checkout").value);
+
+    if (checkin < today) {
+        alert("La data di check-in deve essere oggi o successiva.");
+        e.preventDefault();
+        return;
+    }
+
+    const tomorrow = new Date(checkin);
+    tomorrow.setDate(checkin.getDate() + 1);
+
+    if (checkout < tomorrow) {
+        alert("La data di check-out deve essere almeno il giorno dopo il check-in.");
+        e.preventDefault();
+        return;
+    }
+});
+</script>
+
+</body>
+</html>
+

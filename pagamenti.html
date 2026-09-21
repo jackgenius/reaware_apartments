@@ -6,24 +6,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body { font-family: Arial, sans-serif; background:#f7f7f7; padding:20px; }
-.container { max-width:600px; margin:auto; background:#fff; padding:25px; border-radius:10px; }
-button { padding:15px; background:#0073e6; color:#fff; border:none; border-radius:5px; cursor:pointer; margin-top:20px; width:100%; font-size:18px; }
-button:hover { background:#005bb5; }
+.container { max-width:800px; margin:auto; background:#fff; padding:25px; border-radius:10px; }
+h2 { text-align:center; }
+p { line-height:1.6; }
+.btn {
+  display:block;
+  width:100%;
+  padding:15px;
+  background:#0073e6;
+  color:#fff;
+  text-align:center;
+  border-radius:8px;
+  font-size:18px;
+  margin-top:25px;
+  text-decoration:none;
+}
+.btn:hover { background:#005bb5; }
+.box { background:#f0f0f0; padding:15px; border-radius:8px; margin-top:20px; }
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<h2>Pagamenti Reaware BnB</h2>
+<h2>Pagamento Soggiorno</h2>
 
-<button onclick="window.location.href='STRIPE_LINK_TASSA'">
-Paga Tassa di Soggiorno
-</button>
+<p>
+In questa pagina puoi procedere al pagamento del soggiorno presso Reaware Apartments.
+Il pagamento avviene tramite <strong>Stripe Checkout</strong> in un’unica transazione sicura.
+</p>
 
-<button onclick="window.location.href='STRIPE_LINK_PRENOTAZIONE'">
-Paga Intero Importo della Prenotazione
-</button>
+<div class="box">
+<h3>Voci disponibili nel checkout</h3>
+<ul>
+  <li><strong>Canone di locazione:</strong> 35,00 €</li>
+  <li><strong>Tassa di soggiorno:</strong> 2,30 €</li>
+  <li><strong>Cauzione:</strong> 51,00 €</li>
+</ul>
+
+<p>
+Nel checkout potrai selezionare liberamente la quantità di ciascuna voce (0 o 1).  
+Tutte le voci hanno quantità predefinita pari a <strong>0</strong>.  
+Il totale si aggiorna automaticamente in base alle voci che decidi di includere.
+</p>
+</div>
+
+<a href="https://buy.stripe.com/IL_TUO_LINK_UNICO" class="btn">Procedi al pagamento</a>
+
+<p style="margin-top:20px; font-size:14px; color:#555;">
+Il pagamento è gestito da Stripe con connessione protetta HTTPS.
+</p>
 
 </div>
 </body>

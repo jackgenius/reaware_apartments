@@ -21,42 +21,39 @@ button:hover { background:#005bb5; }
 
 <h2>Contratto di Locazione Turistica</h2>
 
-<form id="contrattoForm" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+<form action="https://api.web3forms.com/submit" method="POST">
 
 <input type="hidden" name="access_key" value="f2ed97b8-5ef4-43e0-ab8f-945d3a7d926b">
-<input type="hidden" name="subject" value="Reaware Apartments - Contratto Firmato">
+<input type="hidden" name="subject" value="Contratto firmato da: {nome}">
 <input type="hidden" name="email_to" value="jackgeniosky@gmail.com">
-<input type="hidden" name="redirect" value="https://reaware.it/grazie.html">
+<input type="hidden" name="redirect" value="https://reaware.eu/grazie.html">
 
-<label>Nome</label>
-<input type="text" name="nome" id="nome" required>
+<!-- Allegato PDF -->
+<input type="hidden" name="attachment" id="pdf_attachment">
 
-<label>Cognome</label>
-<input type="text" name="cognome" id="cognome" required>
+<label>Nome e Cognome</label>
+<input type="text" name="nome" required>
 
 <label>Email</label>
-<input type="email" name="email_ospite" id="email_ospite" required>
+<input type="email" name="email_ospite" required>
 
-<label>Telefono (con prefisso internazionale)</label>
-<input type="text" name="telefono" id="telefono" required>
+<label>Telefono</label>
+<input type="text" name="telefono" required>
 
 <label>Documento (tipo + numero)</label>
-<input type="text" name="documento" id="documento" required>
+<input type="text" name="documento" required>
 
 <label>Indirizzo di residenza</label>
-<input type="text" name="residenza" id="residenza" required>
-
-<label>Carica documento (PDF, JPG, PNG) — 1 o 2 file</label>
-<input type="file" name="files[]" id="files" accept=".pdf,.jpg,.jpeg,.png" multiple>
+<input type="text" name="residenza" required>
 
 <label>Data check-in</label>
-<input type="date" name="checkin" id="checkin" required>
+<input type="date" name="checkin" required>
 
 <label>Data check-out</label>
-<input type="date" name="checkout" id="checkout" required>
+<input type="date" name="checkout" required>
 
 <label>Numero ospiti</label>
-<input type="number" name="ospiti" id="ospiti" min="1" required>
+<input type="number" name="ospiti" min="1" required>
 
 <div id="contract-box">
 <p>
@@ -75,21 +72,8 @@ L’ospite dichiara di accettare:
 </p>
 </div>
 
-<textarea name="contratto" rows="12" readonly>
-Contratto di Locazione Turistica Breve - Reaware BnB
-
-L’ospite dichiara di accettare:
-- le regole della struttura
-- la durata del soggiorno
-- l’importo totale concordato
-- la tassa di soggiorno prevista dal Comune di Campobasso
-- che il soggiorno è una locazione turistica breve ai sensi dell’art. 4 DL 50/2017
-- che i dati inseriti sono veritieri
-- che accetta integralmente il regolamento della casa presente nelle stanze
-</textarea>
-
 <label>
-<input type="checkbox" name="firma_digitale" id="firma_digitale" value="Accettato" required>
+<input type="checkbox" name="firma_digitale" value="Accettato" required>
 Confermo di aver letto e accettato il contratto di locazione turistica e il regolamento della casa.
 </label>
 
@@ -99,94 +83,47 @@ Confermo di aver letto e accettato il contratto di locazione turistica e il rego
 
 </div>
 
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Generazione PDF -->
 <script>
-// VALIDAZIONE FORM CONTRATTO
-document.getElementById("contrattoForm").addEventListener("submit", function(e) {
+document.querySelector("form").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-    // Nome e cognome
-    const nome = document.getElementById("nome").value.trim();
-    const cognome = document.getElementById("cognome").value.trim();
-    if (nome.length < 2 || cognome.length < 2) {
-        alert("Inserisci nome e cognome validi.");
-        e.preventDefault();
-        return;
-    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-    // Telefono: almeno 10 cifre totali (prefisso + numero)
-    const telefono = document.getElementById("telefono").value.trim();
-    const phoneDigits = telefono.replace(/\D/g, "");
-    if (!telefono.startsWith("+") || phoneDigits.length < 10) {
-        alert("Il numero di telefono deve iniziare con + e contenere almeno 10 cifre totali (prefisso + numero).");
-        e.preventDefault();
-        return;
-    }
+    const nome = document.querySelector("[name='nome']").value;
+    const email = document.querySelector("[name='email_ospite']").value;
+    const telefono = document.querySelector("[name='telefono']").value;
+    const documento = document.querySelector("[name='documento']").value;
+    const residenza = document.querySelector("[name='residenza']").value;
+    const checkin = document.querySelector("[name='checkin']").value;
+    const checkout = document.querySelector("[name='checkout']").value;
+    const ospiti = document.querySelector("[name='ospiti']").value;
 
-    // Documento
-    const documento = document.getElementById("documento").value.trim();
-    if (documento.length < 5) {
-        alert("Inserisci un documento valido (tipo + numero).");
-        e.preventDefault();
-        return;
-    }
+    doc.setFontSize(14);
+    doc.text("Contratto di Locazione Turistica - Reaware Apartments", 10, 10);
 
-    // File opzionale → massimo 2 file, formati validi
-    const files = document.getElementById("files").files;
-    if (files.length > 2) {
-        alert("Puoi caricare massimo 2 file (passaporto o carta d'identità fronte/retro).");
-        e.preventDefault();
-        return;
-    }
+    doc.setFontSize(11);
+    doc.text(`Nome e Cognome: ${nome}`, 10, 25);
+    doc.text(`Email: ${email}`, 10, 35);
+    doc.text(`Telefono: ${telefono}`, 10, 45);
+    doc.text(`Documento: ${documento}`, 10, 55);
+    doc.text(`Residenza: ${residenza}`, 10, 65);
+    doc.text(`Check-in: ${checkin}`, 10, 75);
+    doc.text(`Check-out: ${checkout}`, 10, 85);
+    doc.text(`Numero ospiti: ${ospiti}`, 10, 95);
 
-    if (files.length > 0) {
-        const allowed = ["application/pdf", "image/jpeg", "image/png"];
-        for (let i = 0; i < files.length; i++) {
-            if (!allowed.includes(files[i].type)) {
-                alert("I documenti devono essere PDF, JPG o PNG.");
-                e.preventDefault();
-                return;
-            }
-        }
-    }
+    doc.text("L’ospite accetta integralmente il regolamento della casa presente nelle stanze.", 10, 115);
 
-    // Date
-    const today = new Date();
-    today.setHours(0,0,0,0);
+    const pdfBase64 = doc.output("datauristring");
+    document.getElementById("pdf_attachment").value = pdfBase64;
 
-    const checkin = new Date(document.getElementById("checkin").value);
-    const checkout = new Date(document.getElementById("checkout").value);
-
-    if (checkin < today) {
-        alert("La data di check-in deve essere oggi o successiva.");
-        e.preventDefault();
-        return;
-    }
-
-    const tomorrow = new Date(checkin);
-    tomorrow.setDate(checkin.getDate() + 1);
-
-    if (checkout < tomorrow) {
-        alert("La data di check-out deve essere almeno il giorno dopo il check-in.");
-        e.preventDefault();
-        return;
-    }
-
-    // Numero ospiti
-    const ospiti = parseInt(document.getElementById("ospiti").value);
-    if (ospiti < 1) {
-        alert("Inserisci almeno 1 ospite.");
-        e.preventDefault();
-        return;
-    }
-
-    // Firma digitale
-    if (!document.getElementById("firma_digitale").checked) {
-        alert("Devi accettare il contratto per procedere.");
-        e.preventDefault();
-        return;
-    }
+    this.submit();
 });
 </script>
 
 </body>
 </html>
-

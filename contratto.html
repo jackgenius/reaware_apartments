@@ -24,7 +24,6 @@ button:hover { background:#005bb5; }
 
 <form id="contrattoForm">
 
-<!-- STRUTTURA -->
 <label>Struttura</label>
 <select name="struttura" required>
   <option value="Roma 64">Roma 64</option>
@@ -66,7 +65,7 @@ L’ospite dichiara di accettare:
 <li>la tassa di soggiorno prevista dal Comune di Campobasso</li>
 <li>che il soggiorno è una locazione turistica breve ai sensi dell’art. 4 DL 50/2017</li>
 <li>che i dati inseriti sono veritieri</li>
-<li>che accetta integralmente il regolamento della casa presente nelle stanze</li>
+<li><b>che accetta integralmente il regolamento della casa presente nelle stanze</b></li>
 </ul>
 </p>
 </div>
@@ -82,8 +81,7 @@ Confermo di aver letto e accettato il contratto di locazione turistica e il rego
 
 <div class="info">
 <p>
-Dopo aver inviato il contratto, verrà scaricato automaticamente il PDF con tutti i dati inseriti.<br><br>
-<b>IMPORTANTE:</b> il file Base64 viene scaricato automaticamente per uso interno.
+Dopo l’invio, verrà scaricato automaticamente il PDF per l’utente e riceverai una mail con il Base64 del contratto.
 </p>
 </div>
 
@@ -91,6 +89,12 @@ Dopo aver inviato il contratto, verrà scaricato automaticamente il PDF con tutt
 
 <!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+emailjs.init("MBYLPBFTcYmFdpG6J");
+</script>
 
 <script>
 document.getElementById("contrattoForm").addEventListener("submit", async function(e) {
@@ -109,10 +113,10 @@ document.getElementById("contrattoForm").addEventListener("submit", async functi
     const checkout = document.querySelector("[name='checkout']").value;
     const ospiti = document.querySelector("[name='ospiti']").value;
 
-    // Nome file base64
+    // Nome PDF scaricato dall’utente
     const safeNome = nome.replace(/\s+/g, "_");
     const safeStruttura = struttura.replace(/\s+/g, "_");
-    const nomeFile = `${safeNome}_${checkin}_${safeStruttura}.txt`;
+    const nomePdf = `Contratto_${safeNome}_${checkin}_${safeStruttura}.pdf`;
 
     doc.setFontSize(14);
     doc.text("Contratto di Locazione Turistica - Reaware Apartments", 10, 10);
@@ -131,20 +135,33 @@ document.getElementById("contrattoForm").addEventListener("submit", async functi
     doc.text("Firma digitale:", 10, 120);
     doc.text("L’utente ha confermato digitalmente il contratto selezionando la casella di accettazione.", 10, 130);
 
+    doc.text("Accettazione regolamento:", 10, 150);
+    doc.text("L’ospite accetta integralmente il regolamento della casa presente nelle stanze.", 10, 160);
+
     // PDF → Base64
     const pdfBase64 = doc.output("datauristring");
 
     // Scarica PDF per l’utente
-    doc.save(`Contratto_${safeNome}.pdf`);
+    doc.save(nomePdf);
 
-    // Scarica Base64 per uso interno
-    const blob = new Blob([pdfBase64], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = nomeFile;
-    link.click();
+    // INVIO EMAIL CON BASE64 COME TESTO
+    emailjs.send("service_56bgziu", "template_lstesjd", {
+        nome: nome,
+        email_ospite: email,
+        telefono: telefono,
+        documento: documento,
+        residenza: residenza,
+        checkin: checkin,
+        checkout: checkout,
+        ospiti: ospiti,
+        struttura: struttura,
+        base64_pdf: pdfBase64
+    }).then(() => {
+        alert("Contratto inviato correttamente.");
+    }).catch((err) => {
+        alert("Errore nell'invio del contratto: " + err);
+    });
 
-    alert("Contratto generato. Il file Base64 è stato scaricato.");
 });
 </script>
 

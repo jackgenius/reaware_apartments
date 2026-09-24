@@ -99,7 +99,7 @@ Dopo aver inviato il contratto, verrà scaricato automaticamente il PDF con tutt
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-emailjs.init("YOUR_PUBLIC_KEY");
+emailjs.init("MBYLPBFTcYmFdpG6J"); 
 </script>
 
 <!-- Generazione PDF + invio EmailJS con allegato -->
@@ -124,3 +124,52 @@ document.getElementById("contrattoForm").addEventListener("submit", async functi
     doc.text("Contratto di Locazione Turistica - Reaware Apartments", 10, 10);
 
     doc.setFontSize(11);
+    doc.text(`Struttura: ${struttura}`, 10, 20);
+    doc.text(`Nome e Cognome: ${nome}`, 10, 30);
+    doc.text(`Email: ${email}`, 10, 40);
+    doc.text(`Telefono: ${telefono}`, 10, 50);
+    doc.text(`Documento: ${documento}`, 10, 60);
+    doc.text(`Residenza: ${residenza}`, 10, 70);
+    doc.text(`Check-in: ${checkin}`, 10, 80);
+    doc.text(`Check-out: ${checkout}`, 10, 90);
+    doc.text(`Numero ospiti: ${ospiti}`, 10, 100);
+
+    doc.text("L’ospite accetta integralmente il regolamento della casa presente nelle stanze.", 10, 120);
+
+    // Converti PDF in Blob
+    const pdfBlob = doc.output("blob");
+
+    // Crea un file allegato
+    const file = new File([pdfBlob], `Contratto_${nome}.pdf`, {
+        type: "application/pdf",
+    });
+
+    // Invia email con allegato vero
+    const formData = {
+        nome: nome,
+        email_ospite: email,
+        telefono: telefono,
+        documento: documento,
+        residenza: residenza,
+        checkin: checkin,
+        checkout: checkout,
+        ospiti: ospiti,
+        struttura: struttura,
+        pdf_attachment: file
+    };
+
+    emailjs.send("service_56bgziu", "template_lstesjd", formData)
+        .then(() => {
+            alert("Contratto inviato correttamente!");
+        })
+        .catch((err) => {
+            alert("Errore nell'invio del contratto: " + err);
+        });
+
+    // Scarica il PDF per l’ospite
+    doc.save(`Contratto_${nome}.pdf`);
+});
+</script>
+
+</body>
+</html>
